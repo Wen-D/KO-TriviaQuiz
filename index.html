@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS NINJA</title>
+
+    <!-- Vendors -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,300;0,400;0,700;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="vendor/css/fontAwesome.css" />
+    <link rel="stylesheet" href="vendor/css/v5.bootstrap.css" />
+
+    <script src="vendor/js/all.js"></script>
+    <script src="vendor/js/popper.min.js"></script>
+    <script src="vendor/js/v5.bootstrap.min.js"></script>
+    <script src="vendor/js/knockout.min.js"></script>
+    <!------------->
+
+    <link rel="stylesheet" href="assets/css/styles.css" />
+
+    <!-- Favicon icon -->
+    <link
+      rel="shortcut icon"
+      href="assets/images/favicon.ico"
+      type="image/x-icon"
+    />
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
+    <!------------->
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="logo-wrapper">
+        <div>
+          <img
+            src="assets/images/Logo.png"
+            alt="Logo"
+            data-bind="click: toState"
+            data-value="home"
+          />
+        </div>
+        <div class="title">JS NINJA</div>
+      </div>
+
+      <!-- Home State -->
+      <div class="container-fluid">
+        <div class="state-home state" data-bind="visible: currentState() == 'home'">
+          <div class="container">
+            <div class="label">Please Enter Your Name</div>
+            <div>
+              <input class="jsn-input-control" data-bind="value: jsNinja" />
+            </div>
+
+            <div>
+              <button
+                data-bind="click: toState"
+                data-value="trivia"
+                data-direction="forwards"
+                type="button"
+                class="btn btn-danger btn-danger-overwrite"
+              >
+                Start Trivia
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trivia View -->
+        <div
+          class="state-trivia state"
+          data-bind="visible: currentState() == 'trivia'"
+        >
+          <div class="header align-items">
+            <button
+              data-bind="click: toState"
+              data-value="reset"
+              type="button"
+              class="btn btn-danger"
+            >
+              Reset
+            </button>
+            <div
+              data-bind="text: length() ? length() : ''"
+              class="trivia-count"
+            ></div>
+            <div>
+              <a href="javascript:void(0);" data-bind="click: toState" type="button" class="btn btn-skip"><i class="fas fa-chevron-right"></i></a>
+            </div>
+          </div>
+          <div class="justify-content-flex-end">
+            <strong data-bind="text: jsNinja"></strong>
+          </div>
+
+          
+          
+          <div class="trivia-main">
+            <div class="container">
+              <h5
+                class="question"
+                data-bind="text: currentTrivia() ? currentTrivia().question : ''"
+              ></h5>
+              <br />
+              <div
+                data-bind="foreach: currentTrivia() ? currentTrivia().options : []"
+              >
+                <div>
+                  <input
+                    type="radio"
+                    data-bind="checkedValue: $data, checked: $root.chosenItem"
+                  />
+
+                  &nbsp;
+                  <span data-bind="text: $data.name"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="footer align-items">
+            <button
+              data-bind="click: toState"
+              data-value="trivia"
+              data-direction="backwards"
+              type="button"
+              class="btn btn-outline-primary"
+            >
+              <i class="fas fa-angle-left"></i>
+              Previous
+            </button>
+
+            <button
+              data-bind="click: toState"
+              data-value="trivia"
+              data-direction="forwards"
+              type="button"
+              class="btn btn-outline-success"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+
+        <!-- Result View -->
+        <div
+          class="state-result state"
+          data-bind="visible: currentState() == 'result'"
+        >
+          <div class="header align-items">
+            <button
+              data-bind="click: toState"
+              data-value="reset"
+              type="button"
+              class="btn btn-danger"
+            >
+              Reset
+            </button>
+            <div class="justify-content-flex-end">
+              <strong data-bind="text: jsNinja"></strong>
+            </div>
+          </div>
+          
+          <div class="main">
+            <div>
+              <div class="rank" data-bind="text: rank"></div>
+              <div class="display-6">
+                Score: <span data-bind="text: score"></span>%
+              </div>
+            </div>
+          </div>
+          <div class="footer align-items">
+            <button
+              data-bind="click: toState"
+              data-value="try-again"
+              type="button"
+              class="btn btn-outline-primary"
+            >
+              Try Again
+            </button>
+            <button
+              data-bind="click: toState"
+              data-value="review"
+              type="button"
+              class="btn btn-outline-success"
+            >
+              See Correct Answers
+            </button>
+          </div>
+        </div>
+
+        <!-- Review Answers View -->
+        <div
+          class="state-result"
+          data-bind="visible: currentState() == 'review'"
+        >
+        <div class="header align-items">
+          <button
+            data-bind="click: toState"
+            data-value="reset"
+            type="button"
+            class="btn btn-danger"
+          >
+            Reset
+          </button>
+          <div class="justify-content-flex-end">
+            <strong data-bind="text: jsNinja"></strong>
+          </div>
+        </div>
+
+          <div class="correct-answers">
+            <div data-bind="foreach: data">
+              <div class="data-tile">
+                <div class="alert-wrapper">
+                    <!-- ko if: $data.answered -->
+                      <div class="alert alert-success ">Correct</div>
+                    <!-- /ko -->
+                    <!-- ko ifnot: $data.answered -->
+                      <div class="alert alert-danger">Incorrect</div>
+                    <!-- /ko -->
+                </div>  
+              <div data-bind="visible: $data.answered"></div>
+              
+              <h5 data-bind="text: question"></h5>
+              <div data-bind="foreach: options">
+                <div>
+                  <!-- ko if: isCorrect -->
+                    
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                  <!-- /ko -->
+                  <!-- ko ifnot: isCorrect -->
+                     
+                      <i class="far fa-times-circle"></i>
+                  <!-- /ko -->
+                  <span data-bind="text: name"></span>
+                </div>
+              
+              </div> 
+              <div>
+                <span class="your-answer">Your answer: </span>
+                <!-- ko if: userAnswer -->
+                <i class="far fa-dot-circle"></i><span data-bind="text: userAnswer"></span>
+                <!-- /ko -->
+                <!-- ko ifnot: userAnswer -->
+                  Blank - No answer
+                <!-- /ko -->
+              </div>
+            </div>
+             
+          </div>
+        </div>
+        <div class="footer align-items">
+          <button
+            data-bind="click: toState"
+            data-value="try-again"
+            type="button"
+            class="btn btn-outline-primary"
+          >
+            Try Again
+          </button>
+          <button
+            data-bind="click: toState"
+            data-value="reset"
+            type="button"
+            class="btn btn-danger"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="assets/js/modal.js"></script>
+    <script src="assets/js/index.js"></script>
+  </body>
+</html>
